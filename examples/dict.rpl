@@ -9,4 +9,7 @@ assert (dct.foo == "bar");
 assert (dct2.foo == dct2.foo);
 assert (dct2.bar == "foo");
 
-print "Great Success!"
+print "Great Success!";
+
+dct.bar := "foo";
+assert (dct.bar == dct2.bar);
