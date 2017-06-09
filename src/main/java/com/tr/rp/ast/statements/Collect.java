@@ -9,7 +9,7 @@ import java.util.Set;
 
 import com.tr.rp.ast.AbstractStatement;
 import com.tr.rp.ast.LanguageElement;
-import com.tr.rp.ast.expressions.AssignmentTarget;
+import com.tr.rp.ast.expressions.IndexAssignmentTarget;
 import com.tr.rp.ast.expressions.Variable;
 import com.tr.rp.ast.statements.FunctionCallForm.ExtractedExpression;
 import com.tr.rp.exceptions.RPLException;
@@ -21,20 +21,20 @@ import com.tr.rp.varstore.VarStore;
 		
 public class Collect extends AbstractStatement {
 	
-	private final AssignmentTarget target;
+	private final IndexAssignmentTarget target;
 	private final Variable variable;
 	
-	public Collect(AssignmentTarget target, Variable variable) {
+	public Collect(IndexAssignmentTarget target, Variable variable) {
 		this.target = target;
 		this.variable = variable;
 	}
 
-	public Collect(AssignmentTarget target, String variable) {
+	public Collect(IndexAssignmentTarget target, String variable) {
 		this(target, new Variable(variable));
 	}
 
 	public Collect(String target, String variable) {
-		this(new AssignmentTarget(target), new Variable(variable));
+		this(new IndexAssignmentTarget(target), new Variable(variable));
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class Collect extends AbstractStatement {
 
 	@Override
 	public LanguageElement replaceVariable(String a, String b) {
-		return new Collect((AssignmentTarget)target.replaceVariable(a, b), (Variable)variable.replaceVariable(a, b));
+		return new Collect((IndexAssignmentTarget)target.replaceVariable(a, b), (Variable)variable.replaceVariable(a, b));
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class Collect extends AbstractStatement {
 		ExtractedExpression rewrittenTarget = FunctionCallForm.extractFunctionCalls(target);
 		ExtractedExpression rewrittenVar = FunctionCallForm.extractFunctionCalls(variable);
 		if (rewrittenVar.isRewritten() || rewrittenTarget.isRewritten()) {
-			return new FunctionCallForm(new Collect((AssignmentTarget)rewrittenTarget.getExpression(), (Variable)rewrittenVar.getExpression()), rewrittenTarget.getAssignments(), rewrittenVar.getAssignments());
+			return new FunctionCallForm(new Collect((IndexAssignmentTarget)rewrittenTarget.getExpression(), (Variable)rewrittenVar.getExpression()), rewrittenTarget.getAssignments(), rewrittenVar.getAssignments());
 		} else {
 			return this;
 		}

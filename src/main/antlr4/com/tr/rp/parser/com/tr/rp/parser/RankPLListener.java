@@ -630,13 +630,27 @@ public interface RankPLListener extends ParseTreeListener {
 	 */
 	void exitIndex(RankPLParser.IndexContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link RankPLParser#assignment_target}.
+	 * Enter a parse tree produced by the {@code IndexAssignmentTarget}
+	 * labeled alternative in {@link RankPLParser#assignment_target}.
 	 * @param ctx the parse tree
 	 */
-	void enterAssignment_target(RankPLParser.Assignment_targetContext ctx);
+	void enterIndexAssignmentTarget(RankPLParser.IndexAssignmentTargetContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link RankPLParser#assignment_target}.
+	 * Exit a parse tree produced by the {@code IndexAssignmentTarget}
+	 * labeled alternative in {@link RankPLParser#assignment_target}.
 	 * @param ctx the parse tree
 	 */
-	void exitAssignment_target(RankPLParser.Assignment_targetContext ctx);
+	void exitIndexAssignmentTarget(RankPLParser.IndexAssignmentTargetContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code FieldAssignmentTarget}
+	 * labeled alternative in {@link RankPLParser#assignment_target}.
+	 * @param ctx the parse tree
+	 */
+	void enterFieldAssignmentTarget(RankPLParser.FieldAssignmentTargetContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code FieldAssignmentTarget}
+	 * labeled alternative in {@link RankPLParser#assignment_target}.
+	 * @param ctx the parse tree
+	 */
+	void exitFieldAssignmentTarget(RankPLParser.FieldAssignmentTargetContext ctx);
 }

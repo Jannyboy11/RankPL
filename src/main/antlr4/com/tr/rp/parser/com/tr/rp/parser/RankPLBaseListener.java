@@ -652,13 +652,25 @@ public class RankPLBaseListener implements RankPLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAssignment_target(RankPLParser.Assignment_targetContext ctx) { }
+	@Override public void enterIndexAssignmentTarget(RankPLParser.IndexAssignmentTargetContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAssignment_target(RankPLParser.Assignment_targetContext ctx) { }
+	@Override public void exitIndexAssignmentTarget(RankPLParser.IndexAssignmentTargetContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFieldAssignmentTarget(RankPLParser.FieldAssignmentTargetContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFieldAssignmentTarget(RankPLParser.FieldAssignmentTargetContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

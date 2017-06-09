@@ -12,7 +12,8 @@ import java.util.Set;
 import com.tr.rp.ast.AbstractExpression;
 import com.tr.rp.ast.AbstractStatement;
 import com.tr.rp.ast.LanguageElement;
-import com.tr.rp.ast.expressions.AssignmentTarget;
+import com.tr.rp.ast.expressions.AbstractAssignmentTarget;
+import com.tr.rp.ast.expressions.IndexAssignmentTarget;
 import com.tr.rp.ast.statements.FunctionCallForm.ExtractedExpression;
 import com.tr.rp.exceptions.RPLException;
 import com.tr.rp.exceptions.RPLMiscException;
@@ -30,11 +31,11 @@ public class ReadFile extends AbstractStatement {
 		NEWLINE_SEPARATED
 	}
 	
-	private final AssignmentTarget target;
+	private final AbstractAssignmentTarget target;
 	private final AbstractExpression path;
 	private final InputMethod mode;
 	
-	public ReadFile(AssignmentTarget target, AbstractExpression path, InputMethod mode) {
+	public ReadFile(AbstractAssignmentTarget target, AbstractExpression path, InputMethod mode) {
 		this.target = target;
 		this.path = path;
 		this.mode = mode;
@@ -43,8 +44,8 @@ public class ReadFile extends AbstractStatement {
 	@Override
 	public RankedIterator<VarStore> getIterator(RankedIterator<VarStore> in, ExecutionContext c) throws RPLException {
 		RankTransformIterator rt = new RankTransformIterator(in, this, target, path);
-		final AssignmentTarget target = (AssignmentTarget)rt.getExpression(0);
-		final AssignmentTarget path = (AssignmentTarget)rt.getExpression(1);
+		final IndexAssignmentTarget target = (IndexAssignmentTarget)rt.getExpression(0);
+		final IndexAssignmentTarget path = (IndexAssignmentTarget)rt.getExpression(1);
 		return new RankedIterator<VarStore>() {
 
 			private String lastPath;
@@ -89,7 +90,7 @@ public class ReadFile extends AbstractStatement {
 
 	@Override
 	public LanguageElement replaceVariable(String a, String b) {
-		return new ReadFile((AssignmentTarget)target.replaceVariable(a, b), (AbstractExpression)path.replaceVariable(a, b), mode);
+		return new ReadFile((AbstractAssignmentTarget)target.replaceVariable(a, b), (AbstractExpression)path.replaceVariable(a, b), mode);
 	}
 
 	@Override
@@ -99,7 +100,7 @@ public class ReadFile extends AbstractStatement {
 		if (rewrittenTarget.isRewritten() || rewrittenPath.isRewritten()) {
 			return new FunctionCallForm(
 					new ReadFile(
-							(AssignmentTarget)rewrittenTarget.getExpression(), 
+							(IndexAssignmentTarget)rewrittenTarget.getExpression(), 
 							rewrittenPath.getExpression(), 
 							mode), 
 					rewrittenTarget.getAssignments(),

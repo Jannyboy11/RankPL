@@ -5,7 +5,8 @@ import java.util.Set;
 
 import com.tr.rp.ast.AbstractStatement;
 import com.tr.rp.ast.LanguageElement;
-import com.tr.rp.ast.expressions.AssignmentTarget;
+import com.tr.rp.ast.expressions.AbstractAssignmentTarget;
+import com.tr.rp.ast.expressions.IndexAssignmentTarget;
 import com.tr.rp.ast.expressions.Variable;
 import com.tr.rp.ast.statements.FunctionCallForm.ExtractedExpression;
 import com.tr.rp.exceptions.RPLException;
@@ -19,18 +20,18 @@ import com.tr.rp.varstore.VarStore;
  */
 public class Dec extends AbstractStatement {
 	
-	private final AssignmentTarget target;
+	private final AbstractAssignmentTarget target;
 	
-	public Dec(AssignmentTarget var) {
+	public Dec(AbstractAssignmentTarget var) {
 		this.target = var;
 	}
 
 	public Dec(String targetVariable) {
-		this(new AssignmentTarget(targetVariable));
+		this(new IndexAssignmentTarget(targetVariable));
 	}
 
 	public Dec(Variable targetVariable) {
-		this(new AssignmentTarget(targetVariable.toString()));
+		this(new IndexAssignmentTarget(targetVariable.toString()));
 	}
 
 	@Override
@@ -38,7 +39,7 @@ public class Dec extends AbstractStatement {
 		try {
 			RankTransformIterator rt = 
 				new RankTransformIterator(in, this, target);
-			final AssignmentTarget target = (AssignmentTarget)rt.getExpression(0);
+			final IndexAssignmentTarget target = (IndexAssignmentTarget)rt.getExpression(0);
 			RankedIterator<VarStore> ai = new RankedIterator<VarStore>() {
 	
 				@Override
@@ -85,7 +86,7 @@ public class Dec extends AbstractStatement {
 
 	@Override
 	public LanguageElement replaceVariable(String a, String b) {
-		return new Dec((AssignmentTarget)target.replaceVariable(a, b));
+		return new Dec((AbstractAssignmentTarget)target.replaceVariable(a, b));
 	}
 
 	@Override
@@ -98,7 +99,7 @@ public class Dec extends AbstractStatement {
 		ExtractedExpression rewrittenTarget = FunctionCallForm.extractFunctionCalls(target);
 		if (rewrittenTarget.isRewritten()) {
 			return new FunctionCallForm(
-					new Dec((AssignmentTarget)rewrittenTarget.getExpression()), 
+					new Dec((AbstractAssignmentTarget)rewrittenTarget.getExpression()), 
 						rewrittenTarget.getAssignments());
 		} else {
 			return this;

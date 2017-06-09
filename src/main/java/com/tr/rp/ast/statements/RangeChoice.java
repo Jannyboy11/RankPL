@@ -6,7 +6,8 @@ import java.util.Set;
 import com.tr.rp.ast.AbstractExpression;
 import com.tr.rp.ast.AbstractStatement;
 import com.tr.rp.ast.LanguageElement;
-import com.tr.rp.ast.expressions.AssignmentTarget;
+import com.tr.rp.ast.expressions.AbstractAssignmentTarget;
+import com.tr.rp.ast.expressions.IndexAssignmentTarget;
 import com.tr.rp.ast.expressions.Literal;
 import com.tr.rp.ast.statements.FunctionCallForm.ExtractedExpression;
 import com.tr.rp.exceptions.RPLException;
@@ -24,30 +25,30 @@ import com.tr.rp.varstore.VarStore;
  */
 public class RangeChoice extends AbstractStatement {
 
-	public final AssignmentTarget target;
+	public final AbstractAssignmentTarget target;
 	public final AbstractExpression beginExp;
 	public final AbstractExpression endExp;
 
-	public RangeChoice(AssignmentTarget target, AbstractExpression beginExp, AbstractExpression endExp) {
+	public RangeChoice(AbstractAssignmentTarget target, AbstractExpression beginExp, AbstractExpression endExp) {
 		this.target = target;
 		this.beginExp = beginExp;
 		this.endExp = endExp;
 	}
 
-	public RangeChoice(AssignmentTarget target, int begin, int end) {
+	public RangeChoice(AbstractAssignmentTarget target, int begin, int end) {
 		this.target = target;
 		this.beginExp = new Literal<Integer>(begin);
 		this.endExp = new Literal<Integer>(end);
 	}
 
 	public RangeChoice(String targetVariable, AbstractExpression beginExp, AbstractExpression endExp) {
-		this.target = new AssignmentTarget(targetVariable);
+		this.target = new IndexAssignmentTarget(targetVariable);
 		this.beginExp = beginExp;
 		this.endExp = endExp;
 	}
 
 	public RangeChoice(String targetVariable, int begin, int end) {
-		this.target = new AssignmentTarget(targetVariable);
+		this.target = new IndexAssignmentTarget(targetVariable);
 		this.beginExp = new Literal<Integer>(begin);
 		this.endExp = new Literal<Integer>(end);
 	}
@@ -56,7 +57,7 @@ public class RangeChoice extends AbstractStatement {
 	public RankedIterator<VarStore> getIterator(final RankedIterator<VarStore> in, ExecutionContext c) throws RPLException {
 		try {
 			RankTransformIterator rt = new RankTransformIterator(in, this, target, beginExp, endExp);
-			final AssignmentTarget target = (AssignmentTarget)rt.getExpression(0);
+			final AbstractAssignmentTarget target = (AbstractAssignmentTarget)rt.getExpression(0);
 			final AbstractExpression begin = rt.getExpression(1);
 			final AbstractExpression end = rt.getExpression(2);
 			return new RankedIterator<VarStore>() {
@@ -148,7 +149,7 @@ public class RangeChoice extends AbstractStatement {
 
 	@Override
 	public LanguageElement replaceVariable(String a, String b) {
-		return new RangeChoice((AssignmentTarget)target.replaceVariable(a, b), 
+		return new RangeChoice((AbstractAssignmentTarget)target.replaceVariable(a, b), 
 				(AbstractExpression)beginExp.replaceVariable(a, b),
 				(AbstractExpression)endExp.replaceVariable(a, b));
 	}
@@ -168,7 +169,7 @@ public class RangeChoice extends AbstractStatement {
 		if (rewrittenTarget.isRewritten() || rewrittenBegin.isRewritten() || rewrittenEnd.isRewritten()) {
 			return new FunctionCallForm(
 					new RangeChoice(
-							(AssignmentTarget)rewrittenTarget.getExpression(), 
+							(IndexAssignmentTarget)rewrittenTarget.getExpression(), 
 							rewrittenBegin.getExpression(), 
 							rewrittenEnd.getExpression()), 
 					rewrittenTarget.getAssignments(),

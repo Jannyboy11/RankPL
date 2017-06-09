@@ -212,26 +212,26 @@ public class Expressions {
 		return new IndexElementExpression(new Variable(name), indices);
 	}
 
-	public static AssignmentTarget target(String name) {
-		return new AssignmentTarget(name);
+	public static IndexAssignmentTarget target(String name) {
+		return new IndexAssignmentTarget(name);
 	}
 	
-	public static AssignmentTarget target(String name, AbstractExpression firstIndex, AbstractExpression ... otherIndices) {
+	public static IndexAssignmentTarget target(String name, AbstractExpression firstIndex, AbstractExpression ... otherIndices) {
 		AbstractExpression[] indices = new AbstractExpression[otherIndices.length+1];
 		indices[0] = firstIndex;
 		for (int i = 0; i < otherIndices.length; i++) {
 			indices[i+1] = otherIndices[i];
 		}
-		return new AssignmentTarget(name, indices);
+		return new IndexAssignmentTarget(name, indices);
 	}
 	
-	public static AssignmentTarget target(String name, int firstIndex, int ... otherIndices) {
+	public static IndexAssignmentTarget target(String name, int firstIndex, int ... otherIndices) {
 		AbstractExpression[] indices = new AbstractExpression[otherIndices.length+1];
 		indices[0] = lit(firstIndex);
 		for (int i = 0; i < otherIndices.length; i++) {
 			indices[i+1] = lit(otherIndices[i]);
 		}
-		return new AssignmentTarget(name, indices);
+		return new IndexAssignmentTarget(name, indices);
 	}
 
 	public static IndexElementExpression indexedExp(AbstractExpression exp, AbstractExpression firstIndex, AbstractExpression ... otherIndices) {

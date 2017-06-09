@@ -1,13 +1,11 @@
 package com.tr.rp.parser;
 
-import static com.tr.rp.ast.expressions.Expressions.*;
+import static com.tr.rp.ast.expressions.Expressions.lit;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -17,12 +15,14 @@ import com.tr.rp.ast.AbstractStatement;
 import com.tr.rp.ast.Function;
 import com.tr.rp.ast.LanguageElement;
 import com.tr.rp.ast.expressions.Abs;
+import com.tr.rp.ast.expressions.AbstractAssignmentTarget;
 import com.tr.rp.ast.expressions.ArrayConstructExpression;
 import com.tr.rp.ast.expressions.ArrayInitExpression;
-import com.tr.rp.ast.expressions.AssignmentTarget;
+import com.tr.rp.ast.expressions.IndexAssignmentTarget;
 import com.tr.rp.ast.expressions.Conditional;
 import com.tr.rp.ast.expressions.DictionaryConstructExpression;
 import com.tr.rp.ast.expressions.Expressions;
+import com.tr.rp.ast.expressions.FieldAssignmentTarget;
 import com.tr.rp.ast.expressions.FieldExpression;
 import com.tr.rp.ast.expressions.FunctionCall;
 import com.tr.rp.ast.expressions.IndexElementExpression;
@@ -56,7 +56,6 @@ import com.tr.rp.ast.statements.ReadFile;
 import com.tr.rp.ast.statements.Return;
 import com.tr.rp.ast.statements.Skip;
 import com.tr.rp.ast.statements.While;
-import com.tr.rp.parser.RankPLBaseVisitor;
 import com.tr.rp.parser.RankPLParser.AbsExprContext;
 import com.tr.rp.parser.RankPLParser.Arithmetic1ExpressionContext;
 import com.tr.rp.parser.RankPLParser.Arithmetic2ExpressionContext;
@@ -64,7 +63,6 @@ import com.tr.rp.parser.RankPLParser.ArrayConstructExprContext;
 import com.tr.rp.parser.RankPLParser.ArrayInitExprContext;
 import com.tr.rp.parser.RankPLParser.AssertStatementContext;
 import com.tr.rp.parser.RankPLParser.AssignmentStatementContext;
-import com.tr.rp.parser.RankPLParser.Assignment_targetContext;
 import com.tr.rp.parser.RankPLParser.BoolExpressionContext;
 import com.tr.rp.parser.RankPLParser.ChoiceAssignmentStatementContext;
 import com.tr.rp.parser.RankPLParser.CompareExprContext;
@@ -72,6 +70,7 @@ import com.tr.rp.parser.RankPLParser.ConditionalExpressionContext;
 import com.tr.rp.parser.RankPLParser.CutStatementContext;
 import com.tr.rp.parser.RankPLParser.DictionaryExpressionContext;
 import com.tr.rp.parser.RankPLParser.ExpContext;
+import com.tr.rp.parser.RankPLParser.FieldAssignmentTargetContext;
 import com.tr.rp.parser.RankPLParser.FieldExpressionContext;
 import com.tr.rp.parser.RankPLParser.ForStatementContext;
 import com.tr.rp.parser.RankPLParser.FunctionCallContext;
@@ -79,6 +78,7 @@ import com.tr.rp.parser.RankPLParser.FunctiondefContext;
 import com.tr.rp.parser.RankPLParser.Functiondef_or_statementContext;
 import com.tr.rp.parser.RankPLParser.IfStatementContext;
 import com.tr.rp.parser.RankPLParser.IncDecStatementContext;
+import com.tr.rp.parser.RankPLParser.IndexAssignmentTargetContext;
 import com.tr.rp.parser.RankPLParser.IndexContext;
 import com.tr.rp.parser.RankPLParser.IndexedExpressionContext;
 import com.tr.rp.parser.RankPLParser.IndifferentChoiceStatementContext;
@@ -92,9 +92,9 @@ import com.tr.rp.parser.RankPLParser.MaxExprContext;
 import com.tr.rp.parser.RankPLParser.MinExprContext;
 import com.tr.rp.parser.RankPLParser.MinusExprContext;
 import com.tr.rp.parser.RankPLParser.NegateExprContext;
-import com.tr.rp.parser.RankPLParser.ObserveStatementContext;
 import com.tr.rp.parser.RankPLParser.ObserveJStatementContext;
 import com.tr.rp.parser.RankPLParser.ObserveLStatementContext;
+import com.tr.rp.parser.RankPLParser.ObserveStatementContext;
 import com.tr.rp.parser.RankPLParser.ParExpressionContext;
 import com.tr.rp.parser.RankPLParser.ParseIntExprContext;
 import com.tr.rp.parser.RankPLParser.PrintStatementContext;
@@ -119,7 +119,7 @@ public class ConcreteParser extends RankPLBaseVisitor<LanguageElement> {
 	
 	@Override
 	public LanguageElement visitAssignmentStatement(AssignmentStatementContext ctx) {
-		AssignmentTarget target = (AssignmentTarget)visit(ctx.assignment_target());
+		AbstractAssignmentTarget target = (AbstractAssignmentTarget) visit(ctx.assignment_target());
 		AbstractExpression value = (AbstractExpression)visit(ctx.exp());
 		AbstractStatement s = new Assign(target, value);
 		s.setLineNumber(ctx.getStart().getLine());
@@ -128,7 +128,7 @@ public class ConcreteParser extends RankPLBaseVisitor<LanguageElement> {
 
 	@Override
 	public LanguageElement visitIncDecStatement(IncDecStatementContext ctx) {
-		AssignmentTarget target = (AssignmentTarget)visit(ctx.assignment_target());
+		AbstractAssignmentTarget target = (AbstractAssignmentTarget)visit(ctx.assignment_target());
 		String aop = ctx.op.getText();
 		AbstractStatement s = null;
 		if (aop.equals("++")) s = new Inc(target);
@@ -179,19 +179,20 @@ public class ConcreteParser extends RankPLBaseVisitor<LanguageElement> {
 	}
 
 	@Override
-	public LanguageElement visitAssignment_target(Assignment_targetContext ctx) {
+	public LanguageElement visitIndexAssignmentTarget(IndexAssignmentTargetContext ctx) {
 		TerminalNode tn = ctx.VAR();
 		String varName = tn.toString();
 		AbstractExpression[] index = new AbstractExpression[ctx.index().size()];
 		for (int i = 0; i < index.length; i++) {
 			index[i] = (AbstractExpression)visit(ctx.index(i));
 		}
-		return new AssignmentTarget(varName, index);
+		return new IndexAssignmentTarget(varName, index);
 	}
+	
 
 	@Override
 	public LanguageElement visitChoiceAssignmentStatement(ChoiceAssignmentStatementContext ctx) {
-		AssignmentTarget target = (AssignmentTarget)visit(ctx.assignment_target());
+		AbstractAssignmentTarget target = (AbstractAssignmentTarget)visit(ctx.assignment_target());
 		AbstractExpression value1 = (AbstractExpression)visit(ctx.exp(0));
 		AbstractExpression value2 = (AbstractExpression)visit(ctx.exp(2));
 		AbstractExpression rank = (AbstractExpression)visit(ctx.exp(1));
@@ -272,7 +273,7 @@ public class ConcreteParser extends RankPLBaseVisitor<LanguageElement> {
 
 	@Override
 	public LanguageElement visitRangeChoiceStatement(RangeChoiceStatementContext ctx) {
-		AssignmentTarget target = (AssignmentTarget)visit(ctx.assignment_target());
+		AbstractAssignmentTarget target = (AbstractAssignmentTarget)visit(ctx.assignment_target());
 		AbstractExpression a = (AbstractExpression)visit(ctx.exp().get(0));
 		AbstractExpression b = (AbstractExpression)visit(ctx.exp().get(1));
 		AbstractStatement s = new RangeChoice(target, a, b);
@@ -282,7 +283,7 @@ public class ConcreteParser extends RankPLBaseVisitor<LanguageElement> {
 
 	@Override
 	public LanguageElement visitReadFileStatement(ReadFileStatementContext ctx) {
-		AssignmentTarget target = (AssignmentTarget)visit(ctx.assignment_target());
+		AbstractAssignmentTarget target = (AbstractAssignmentTarget)visit(ctx.assignment_target());
 		AbstractExpression fileName = (AbstractExpression)visit(ctx.exp());
 		AbstractStatement s = new ReadFile(target, fileName, ReadFile.InputMethod.NEWLINE_SEPARATED);
 		s.setLineNumber(ctx.getStart().getLine());
@@ -665,6 +666,13 @@ public class ConcreteParser extends RankPLBaseVisitor<LanguageElement> {
 			dict.putExpression(key, value);
 		}
 		return dict;
+	}
+	
+	@Override
+	public LanguageElement visitFieldAssignmentTarget(FieldAssignmentTargetContext ctx) {
+		TerminalNode dct = ctx.VAR(0);
+		TerminalNode field = ctx.VAR(1);
+		return new FieldAssignmentTarget(dct.getText(), field.getText());
 	}
 
 

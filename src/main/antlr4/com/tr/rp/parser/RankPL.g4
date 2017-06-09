@@ -133,7 +133,8 @@ index
  ;
 
 assignment_target
- : VAR index*
+ : VAR index*		#IndexAssignmentTarget
+ | VAR '.' VAR		#FieldAssignmentTarget
  ;
    
 VAR

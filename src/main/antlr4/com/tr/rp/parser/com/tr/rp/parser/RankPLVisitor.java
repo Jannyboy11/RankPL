@@ -375,9 +375,17 @@ public interface RankPLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIndex(RankPLParser.IndexContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link RankPLParser#assignment_target}.
+	 * Visit a parse tree produced by the {@code IndexAssignmentTarget}
+	 * labeled alternative in {@link RankPLParser#assignment_target}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAssignment_target(RankPLParser.Assignment_targetContext ctx);
+	T visitIndexAssignmentTarget(RankPLParser.IndexAssignmentTargetContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code FieldAssignmentTarget}
+	 * labeled alternative in {@link RankPLParser#assignment_target}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFieldAssignmentTarget(RankPLParser.FieldAssignmentTargetContext ctx);
 }

@@ -9,7 +9,8 @@ import java.util.Objects;
 import com.tr.rp.ast.AbstractExpression;
 import com.tr.rp.ast.AbstractStatement;
 import com.tr.rp.ast.LanguageElement;
-import com.tr.rp.ast.expressions.AssignmentTarget;
+import com.tr.rp.ast.expressions.AbstractAssignmentTarget;
+import com.tr.rp.ast.expressions.IndexAssignmentTarget;
 import com.tr.rp.ast.expressions.Literal;
 import com.tr.rp.ast.expressions.Variable;
 import com.tr.rp.ast.statements.FunctionCallForm.ExtractedExpression;
@@ -31,35 +32,35 @@ import com.tr.rp.varstore.VarStore;
  */
 public class Assign extends AbstractStatement {
 	
-	private final AssignmentTarget target;
+	private final AbstractAssignmentTarget target;
 	private final AbstractExpression value;
 	
-	public Assign(AssignmentTarget target, AbstractExpression exp) {
+	public Assign(AbstractAssignmentTarget target, AbstractExpression exp) {
 		this.target = target;
 		this.value = exp;
 	}
 
-	public Assign(AssignmentTarget target, int value) {
+	public Assign(AbstractAssignmentTarget target, int value) {
 		this(target, new Literal<Integer>(value));
 	}
 
 	public Assign(String targetVariable, int value) {
-		this(new AssignmentTarget(targetVariable), new Literal<Integer>(value));
+		this(new IndexAssignmentTarget(targetVariable), new Literal<Integer>(value));
 	}
 
 	public Assign(String targetVariable, AbstractExpression value) {
-		this(new AssignmentTarget(targetVariable), value);
+		this(new IndexAssignmentTarget(targetVariable), value);
 	}
 
 	public Assign(String targetVariable, String otherVariable) {
-		this(new AssignmentTarget(targetVariable), new Variable(otherVariable));
+		this(new IndexAssignmentTarget(targetVariable), new Variable(otherVariable));
 	}
 
 	@Override
 	public RankedIterator<VarStore> getIterator(final RankedIterator<VarStore> in, ExecutionContext c) throws RPLException {
 		try {
 			RankTransformIterator rt = new RankTransformIterator(in, this, target, value);
-			final AssignmentTarget target = (AssignmentTarget)rt.getExpression(0);
+			final IndexAssignmentTarget target = (IndexAssignmentTarget)rt.getExpression(0);
 			final AbstractExpression exp = rt.getExpression(1);
 			RankedIterator<VarStore> ai = new RankedIterator<VarStore>() {
 	
@@ -114,7 +115,7 @@ public class Assign extends AbstractStatement {
 
 	@Override
 	public LanguageElement replaceVariable(String a, String b) {
-		return new Assign((AssignmentTarget)target.replaceVariable(a, b), (AbstractExpression)value.replaceVariable(a, b));
+		return new Assign((IndexAssignmentTarget)target.replaceVariable(a, b), (AbstractExpression)value.replaceVariable(a, b));
 	}
 
 	@Override
@@ -129,7 +130,7 @@ public class Assign extends AbstractStatement {
 		ExtractedExpression rewrittenValue = FunctionCallForm.extractFunctionCalls(value);
 		if (rewrittenTarget.isRewritten() || rewrittenValue.isRewritten()) {
 			return new FunctionCallForm(
-					new Assign((AssignmentTarget)rewrittenTarget.getExpression(), 
+					new Assign((IndexAssignmentTarget)rewrittenTarget.getExpression(), 
 							rewrittenValue.getExpression()), 
 						rewrittenTarget.getAssignments(),
 						rewrittenValue.getAssignments());

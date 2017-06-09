@@ -7,7 +7,7 @@ import java.util.Set;
 import com.tr.rp.ast.AbstractExpression;
 import com.tr.rp.ast.AbstractStatement;
 import com.tr.rp.ast.LanguageElement;
-import com.tr.rp.ast.expressions.AssignmentTarget;
+import com.tr.rp.ast.expressions.IndexAssignmentTarget;
 import com.tr.rp.ast.expressions.Literal;
 import com.tr.rp.ast.statements.FunctionCallForm.ExtractedExpression;
 import com.tr.rp.exceptions.RPLException;
@@ -37,18 +37,18 @@ public class RankedChoice extends AbstractStatement {
 		this.rank = rank;
 	}
 
-	public RankedChoice(AssignmentTarget target, AbstractExpression v1, AbstractExpression v2, int rank) {
+	public RankedChoice(IndexAssignmentTarget target, AbstractExpression v1, AbstractExpression v2, int rank) {
 		this(target, v1, v2, new Literal<Integer>(rank));
 	}
 
-	public RankedChoice(AssignmentTarget target, AbstractExpression v1, AbstractExpression v2, AbstractExpression rank) {
+	public RankedChoice(IndexAssignmentTarget target, AbstractExpression v1, AbstractExpression v2, AbstractExpression rank) {
 		this.s1 = new Assign(target, v1);
 		this.s2 = new Assign(target, v2);
 		this.rank = rank;
 	}
 
 	public RankedChoice(String variable, AbstractExpression v1, AbstractExpression v2, int rank) {
-		this(new AssignmentTarget(variable), v1, v2, rank);
+		this(new IndexAssignmentTarget(variable), v1, v2, rank);
 	}
 
 	public RankedChoice(AbstractStatement s1, AbstractStatement s2, int rank) {
@@ -63,7 +63,7 @@ public class RankedChoice extends AbstractStatement {
 		this.rank = Literal.ZERO;
 	}
 	
-	public RankedChoice(AssignmentTarget var, int[] values, int rankIncrement) {
+	public RankedChoice(IndexAssignmentTarget var, int[] values, int rankIncrement) {
 		this.rank = new Literal<Integer>(rankIncrement);
 		if (values.length == 2) {
 			this.s1 = new Assign(var, values[0]);
@@ -74,7 +74,7 @@ public class RankedChoice extends AbstractStatement {
 		}
 	}
 
-	public RankedChoice(AssignmentTarget var, int[] values, int[] ranks) {
+	public RankedChoice(IndexAssignmentTarget var, int[] values, int[] ranks) {
 		if (ranks.length == 0) throw new IllegalArgumentException();
 		if (values.length != ranks.length + 1) throw new IllegalArgumentException();
 		this.rank = new Literal<Integer>(ranks[0]);

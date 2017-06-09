@@ -20,12 +20,12 @@ import com.tr.rp.varstore.VarStore;
  * hand side of an assignment statement. It consists of a variable
  * and an optional list of indices.
  */
-public class AssignmentTarget extends AbstractExpression {
+public class IndexAssignmentTarget extends AbstractAssignmentTarget {
 
 	private final String name;
 	private final AbstractExpression[] indices;
 	
-	public AssignmentTarget(String name, AbstractExpression ... indices) {
+	public IndexAssignmentTarget(String name, AbstractExpression ... indices) {
 		this.name = name;
 		this.indices = indices;
 	}
@@ -50,7 +50,7 @@ public class AssignmentTarget extends AbstractExpression {
 		for (int i = 0; i < indices.length; i++) {
 			newIndices[i] = (AbstractExpression)indices[i].replaceVariable(a, b);
 		}
-		return new AssignmentTarget(a.equals(name)? b: name);
+		return new IndexAssignmentTarget(a.equals(name)? b: name);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class AssignmentTarget extends AbstractExpression {
 		for (int i = 0; i < indices.length; i++) {
 			newIndices[i] = (AbstractExpression)indices[i].transformRankExpressions(v, rank);
 		}
-		return new AssignmentTarget(name, newIndices);
+		return new IndexAssignmentTarget(name, newIndices);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class AssignmentTarget extends AbstractExpression {
 		for (int i = 0; i < indices.length; i++) {
 			newIndices[i] = (AbstractExpression)indices[i].replaceEmbeddedFunctionCall(fc, var);
 		}
-		return new AssignmentTarget(name);
+		return new IndexAssignmentTarget(name);
 	}
 
 	@Override
@@ -113,9 +113,9 @@ public class AssignmentTarget extends AbstractExpression {
 	}
 	
 	public boolean equals(Object o) {
-		return (o instanceof AssignmentTarget) &&
-				((AssignmentTarget)o).name.equals(name) &&
-				Arrays.deepEquals(((AssignmentTarget)o).indices, indices);
+		return (o instanceof IndexAssignmentTarget) &&
+				((IndexAssignmentTarget)o).name.equals(name) &&
+				Arrays.deepEquals(((IndexAssignmentTarget)o).indices, indices);
 	}
 
 	@Override

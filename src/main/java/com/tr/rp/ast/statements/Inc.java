@@ -5,7 +5,8 @@ import java.util.Set;
 
 import com.tr.rp.ast.AbstractStatement;
 import com.tr.rp.ast.LanguageElement;
-import com.tr.rp.ast.expressions.AssignmentTarget;
+import com.tr.rp.ast.expressions.AbstractAssignmentTarget;
+import com.tr.rp.ast.expressions.IndexAssignmentTarget;
 import com.tr.rp.ast.statements.FunctionCallForm.ExtractedExpression;
 import com.tr.rp.exceptions.RPLException;
 import com.tr.rp.iterators.ranked.ExecutionContext;
@@ -18,14 +19,14 @@ import com.tr.rp.varstore.VarStore;
  */
 public class Inc extends AbstractStatement {
 	
-	private final AssignmentTarget target;
+	private final AbstractAssignmentTarget target;
 	
-	public Inc(AssignmentTarget var) {
+	public Inc(AbstractAssignmentTarget var) {
 		this.target = var;
 	}
 
 	public Inc(String targetVariable) {
-		this(new AssignmentTarget(targetVariable));
+		this(new IndexAssignmentTarget(targetVariable));
 	}
 
 	@Override
@@ -33,7 +34,7 @@ public class Inc extends AbstractStatement {
 		try {
 			RankTransformIterator rt = 
 				new RankTransformIterator(in, this, target);
-			final AssignmentTarget target = (AssignmentTarget)rt.getExpression(0);
+			final IndexAssignmentTarget target = (IndexAssignmentTarget)rt.getExpression(0);
 			RankedIterator<VarStore> ai = new RankedIterator<VarStore>() {
 	
 				@Override
@@ -80,7 +81,7 @@ public class Inc extends AbstractStatement {
 
 	@Override
 	public LanguageElement replaceVariable(String a, String b) {
-		return new Inc((AssignmentTarget)target.replaceVariable(a, b));
+		return new Inc((AbstractAssignmentTarget)target.replaceVariable(a, b));
 	}
 
 	@Override
@@ -93,7 +94,7 @@ public class Inc extends AbstractStatement {
 		ExtractedExpression rewrittenTarget = FunctionCallForm.extractFunctionCalls(target);
 		if (rewrittenTarget.isRewritten()) {
 			return new FunctionCallForm(
-					new Inc((AssignmentTarget)rewrittenTarget.getExpression()), 
+					new Inc((AbstractAssignmentTarget)rewrittenTarget.getExpression()), 
 						rewrittenTarget.getAssignments());
 		} else {
 			return this;
