@@ -21,7 +21,9 @@ import com.tr.rp.ast.expressions.ArrayConstructExpression;
 import com.tr.rp.ast.expressions.ArrayInitExpression;
 import com.tr.rp.ast.expressions.AssignmentTarget;
 import com.tr.rp.ast.expressions.Conditional;
+import com.tr.rp.ast.expressions.DictionaryConstructExpression;
 import com.tr.rp.ast.expressions.Expressions;
+import com.tr.rp.ast.expressions.FieldExpression;
 import com.tr.rp.ast.expressions.FunctionCall;
 import com.tr.rp.ast.expressions.IndexElementExpression;
 import com.tr.rp.ast.expressions.InferringFunctionCall;
@@ -68,6 +70,9 @@ import com.tr.rp.parser.RankPLParser.ChoiceAssignmentStatementContext;
 import com.tr.rp.parser.RankPLParser.CompareExprContext;
 import com.tr.rp.parser.RankPLParser.ConditionalExpressionContext;
 import com.tr.rp.parser.RankPLParser.CutStatementContext;
+import com.tr.rp.parser.RankPLParser.DictionaryExpressionContext;
+import com.tr.rp.parser.RankPLParser.ExpContext;
+import com.tr.rp.parser.RankPLParser.FieldExpressionContext;
 import com.tr.rp.parser.RankPLParser.ForStatementContext;
 import com.tr.rp.parser.RankPLParser.FunctionCallContext;
 import com.tr.rp.parser.RankPLParser.FunctiondefContext;
@@ -646,6 +651,28 @@ public class ConcreteParser extends RankPLBaseVisitor<LanguageElement> {
 			function.setBody(new Composition(statements));
 		}
 		return function;
+	}
+	
+
+	@Override
+	public LanguageElement visitDictionaryExpression(DictionaryExpressionContext ctx) {
+		DictionaryConstructExpression dict = new DictionaryConstructExpression();
+		List<TerminalNode> vars = ctx.VAR();
+		List<ExpContext> expressions = ctx.exp();
+		for (int i = 0; i < vars.size(); i++) {
+			String key = vars.get(i).getText();
+			AbstractExpression value = (AbstractExpression) visit(expressions.get(i));
+			dict.putExpression(key, value);
+		}
+		return dict;
+	}
+
+
+	@Override
+	public LanguageElement visitFieldExpression(FieldExpressionContext ctx) {
+		AbstractExpression dict = (AbstractExpression) visit(ctx.expr6());
+		AbstractExpression field = (AbstractExpression) visit(ctx.variable());
+		return new FieldExpression(dict, field);
 	}
 
 }

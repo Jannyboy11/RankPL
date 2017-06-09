@@ -63,7 +63,8 @@ expr4
  ;
 
 expr5
- : expr6 index*											# IndexedExpression
+ : expr6 index*											# IndexedExpression		/* supports both arrays and dictionaries */
+ | expr6 '.' variable 									# FieldExpression		/* for accessing dictionaries */
  ;
 
 expr6
@@ -86,6 +87,7 @@ expr6
  | Rank '(' exp ')' 	 								# RankExpr
  | Array '(' exp (',' exp)? ')' 						# ArrayInitExpr
  | '[' (exp (',' exp)* )? ']'							# ArrayConstructExpr
+ | '{' (VAR ':=' exp (',' VAR ':=' exp)*)? '}' 			# DictionaryExpression 	/* supports index expressions with strings as well as field expressions */
  | '(' exp ')' 											# ParExpression
  ;
 
