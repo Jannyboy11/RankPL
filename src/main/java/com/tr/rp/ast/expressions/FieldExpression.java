@@ -11,58 +11,55 @@ import com.tr.rp.varstore.VarStore;
 public class FieldExpression extends AbstractExpression {
 	
 	private final AbstractExpression dictNameExpr;
-	private final AbstractExpression fieldNameExpr;
+	private final String field; //TODO this should be a String instead?
 	
-	public FieldExpression(AbstractExpression dictExpr, AbstractExpression fieldExpr) {
+	public FieldExpression(AbstractExpression dictExpr, String field) {
 		this.dictNameExpr = Objects.requireNonNull(dictExpr);
-		this.fieldNameExpr = Objects.requireNonNull(fieldExpr);
+		this.field = Objects.requireNonNull(field);
 	}
 	
 	@Override
 	public void getVariables(Set<String> list) {
-		fieldNameExpr.getVariables(list);
 		dictNameExpr.getVariables(list);
+		//TODO do something with the field or nah?
+		list.add(field);
 	}
 	
 	@Override
 	public FieldExpression replaceVariable(String a, String b) {
-		return new FieldExpression((AbstractExpression) dictNameExpr.replaceVariable(a, b),
-				(AbstractExpression) fieldNameExpr.replaceVariable(a, b));
+		return new FieldExpression((AbstractExpression) dictNameExpr.replaceVariable(a, b), field.equals(a) ? b : field);
 	}
 	
 	@Override
 	public boolean hasRankExpression() {
-		return dictNameExpr.hasRankExpression() || fieldNameExpr.hasRankExpression();
+		return dictNameExpr.hasRankExpression();
 	}
 	
 	@Override
 	public AbstractExpression transformRankExpressions(VarStore v, int rank) throws RPLException {
-		return new FieldExpression(dictNameExpr.transformRankExpressions(v, rank),
-				fieldNameExpr.transformRankExpressions(v, rank));
+		return new FieldExpression(dictNameExpr.transformRankExpressions(v, rank), field);
 	}
 	
 	@Override
 	public AbstractFunctionCall getEmbeddedFunctionCall() {
 		AbstractFunctionCall dctCall = dictNameExpr.getEmbeddedFunctionCall();
-		return dctCall == null ? fieldNameExpr.getEmbeddedFunctionCall() : dctCall;
+		return dctCall;
 	}
 	
 	@Override
 	public AbstractExpression replaceEmbeddedFunctionCall(AbstractFunctionCall fc, String var) {
-		return new FieldExpression(dictNameExpr.replaceEmbeddedFunctionCall(fc, var),
-				fieldNameExpr.replaceEmbeddedFunctionCall(fc, var));
+		return new FieldExpression(dictNameExpr.replaceEmbeddedFunctionCall(fc, var), field);
 	}
 	
 	@Override
 	public Object getValue(VarStore e) throws RPLException {
 		String dictName = dictNameExpr.getStringValue(e);
-		String fieldName = fieldNameExpr.getStringValue(e);
 		
 		//TODO throw a type error?
 		Map<String, Object> fields = (Map<String, Object>) e.getValue(dictName);
 		if (fields == null) return null;
 		
-		return fields.get(fieldName);
+		return fields.get(field);
 	}
 	
 	@Override
@@ -80,11 +77,17 @@ public class FieldExpression extends AbstractExpression {
 		if (!(o instanceof FieldExpression)) return false;
 		FieldExpression that = (FieldExpression) o;
 		return Objects.equals(this.dictNameExpr, that.dictNameExpr) &&
-				Objects.equals(this.fieldNameExpr, that.fieldNameExpr);
+				Objects.equals(this.field, that.field);
 	}
+	
 	@Override
 	public int hashCode() {
-		return Objects.hash(dictNameExpr, fieldNameExpr);
+		return Objects.hash(dictNameExpr, field);
+	}
+	
+	@Override
+	public String toString() {
+		return "FieldExpression{dictionary=" + dictNameExpr + ", field=" + field + "}";
 	}
 	
 }

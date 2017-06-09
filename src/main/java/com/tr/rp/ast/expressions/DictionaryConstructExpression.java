@@ -114,6 +114,11 @@ public class DictionaryConstructExpression extends AbstractExpression {
 		return fields.hashCode();
 	}
 	
+	@Override
+	public String toString() {
+		return "Dictionary{fields := " + fields.toString() + "}";
+	}
+	
 
 	
 	public void putExpression(String key, AbstractExpression value) {

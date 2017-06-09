@@ -671,7 +671,7 @@ public class ConcreteParser extends RankPLBaseVisitor<LanguageElement> {
 	@Override
 	public LanguageElement visitFieldExpression(FieldExpressionContext ctx) {
 		AbstractExpression dict = (AbstractExpression) visit(ctx.expr6());
-		AbstractExpression field = (AbstractExpression) visit(ctx.variable());
+		String field = ctx.VAR().getText();
 		return new FieldExpression(dict, field);
 	}
 

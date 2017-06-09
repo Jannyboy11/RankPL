@@ -1728,9 +1728,7 @@ public class RankPLParser extends Parser {
 		public Expr6Context expr6() {
 			return getRuleContext(Expr6Context.class,0);
 		}
-		public VariableContext variable() {
-			return getRuleContext(VariableContext.class,0);
-		}
+		public TerminalNode VAR() { return getToken(RankPLParser.VAR, 0); }
 		public FieldExpressionContext(Expr5Context ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -1786,7 +1784,7 @@ public class RankPLParser extends Parser {
 				setState(239);
 				match(T__31);
 				setState(240);
-				variable();
+				match(VAR);
 				}
 				break;
 			}
@@ -2935,8 +2933,8 @@ public class RankPLParser extends Parser {
 		"\2\2\2\u00e7\u00e8\3\2\2\2\u00e8\27\3\2\2\2\u00e9\u00ed\5\32\16\2\u00ea"+
 		"\u00ec\5\36\20\2\u00eb\u00ea\3\2\2\2\u00ec\u00ef\3\2\2\2\u00ed\u00eb\3"+
 		"\2\2\2\u00ed\u00ee\3\2\2\2\u00ee\u00f5\3\2\2\2\u00ef\u00ed\3\2\2\2\u00f0"+
-		"\u00f1\5\32\16\2\u00f1\u00f2\7\"\2\2\u00f2\u00f3\5\34\17\2\u00f3\u00f5"+
-		"\3\2\2\2\u00f4\u00e9\3\2\2\2\u00f4\u00f0\3\2\2\2\u00f5\31\3\2\2\2\u00f6"+
+		"\u00f1\5\32\16\2\u00f1\u00f2\7\"\2\2\u00f2\u00f3\7F\2\2\u00f3\u00f5\3"+
+		"\2\2\2\u00f4\u00e9\3\2\2\2\u00f4\u00f0\3\2\2\2\u00f5\31\3\2\2\2\u00f6"+
 		"\u0184\7G\2\2\u00f7\u0184\7:\2\2\u00f8\u0184\7;\2\2\u00f9\u0184\7H\2\2"+
 		"\u00fa\u0184\5\34\17\2\u00fb\u00fc\7<\2\2\u00fc\u00fd\7\5\2\2\u00fd\u010a"+
 		"\7F\2\2\u00fe\u010b\7\4\2\2\u00ff\u0100\7\5\2\2\u0100\u0105\5\f\7\2\u0101"+

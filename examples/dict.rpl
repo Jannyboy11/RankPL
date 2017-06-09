@@ -1,0 +1,12 @@
+# example of how to run:
+#
+#   java -jar RankPL.jar dict.rpl
+
+dct := {foo := "bar"};
+dct2 := {foo := "bar", bar := "foo"};
+
+assert (dct.foo == "bar");
+assert (dct2.foo == dct2.foo);
+assert (dct2.bar == "foo");
+
+print "Great Success!"
