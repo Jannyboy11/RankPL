@@ -1,18 +1,16 @@
 #implementation adapted from: https://dtai.cs.kuleuven.be/problog/tutorial/basic/02_bayes.html and
 #https://sites.google.com/site/bloginference/example-usage/burglary-earthquake-network
 
-alarm := FALSE <<1>> TRUE;
+burglary := FALSE <<1> TRUE;
+earthquake := FALSE <<2>> TRUE;
 
-if (alarm) {
-	burglary := TRUE <<4>> FALSE;
-	earthquake := TRUE <<2>> FALSE;
-} else {
-	burglary := FALSE <<4>> TRUE;
-	earthquake := FALSE <<2>> TRUE;
+if (burglary) then {
+	alarm := TRUE <<2>> FALSE;
+} else if (earthquake) then {
+	alarm := TRUE <<1>> FALSE;
 };
 
-
-if (alarm) {
+if (alarm) then {
 	john_calls := TRUE <<3>> FALSE;
 	mary_calls := TRUE <<1>> FALSE;
 } else {
@@ -20,6 +18,6 @@ if (alarm) {
 	mary_calls := FALSE <<2>> TRUE;
 };
 
-observe (john_calls & mary_calls); #change what we observe for different outcomes
-#return "arlarm: " + alarm + ", burglary: " + burglary + ", earthquake: " + earthquake;
+observe (john_calls & mary_calls);
+return "arlarm: " + alarm + ", burglary: " + burglary + ", earthquake: " + earthquake;
 
