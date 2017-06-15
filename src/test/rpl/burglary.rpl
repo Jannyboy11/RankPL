@@ -1,13 +1,15 @@
 #implementation adapted from: https://dtai.cs.kuleuven.be/problog/tutorial/basic/02_bayes.html and
 #https://sites.google.com/site/bloginference/example-usage/burglary-earthquake-network
 
-burglary := FALSE <<1> TRUE;
+burglary := FALSE <<1>> TRUE;
 earthquake := FALSE <<2>> TRUE;
 
 if (burglary) then {
 	alarm := TRUE <<2>> FALSE;
 } else if (earthquake) then {
 	alarm := TRUE <<1>> FALSE;
+} else {
+	alarm := FALSE;
 };
 
 if (alarm) then {
